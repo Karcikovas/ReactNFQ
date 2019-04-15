@@ -45,16 +45,29 @@ class App extends React.Component {
     const { movieList,genreList } = this.state;
     return (
         <div>
-          {genreList.map((listItem) => (
-              <span
-                  className='genre'
-              >
+          <div>
+            {genreList.map((listItem) => (
+                <span
+                    className='genre'
+                >
               {listItem.name}
             </span>
+            ))}
+          </div>
+
+          {movieList.map((listItem) => (
+              <Card
+                  backgroundImage={getImageUrl(listItem.backdrop_path)}
+                  title={listItem.original_title}
+                  releaseDate={listItem.release_date}
+                  score={listItem.vote_average}
+                  votes={listItem.vote_count}
+                  description={listItem.overview}
+              />
           ))}
         </div>
     );
   }
 }
 
-export default App;
+export default App
