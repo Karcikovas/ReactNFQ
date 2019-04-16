@@ -10,9 +10,11 @@ class App extends React.Component {
     this.state = {
       movieList: [],
       genreList: [],
+      listIds: [],
+      activeGenre: null,
 
     };
-
+    this.getGenresId();
     this.getMovies();
     this.getGenre();
   }
@@ -41,32 +43,76 @@ class App extends React.Component {
     });
   };
 
+  getGenresId = (id) => {
+    axios
+        .get(endpoints.genreMovies(id))
+        .then((res) => this.setCurrentGenreId(res.data.results))
+        .catch((error) => console.log(error))
+  }
+
+  setCurrentGenreId = (id) => {
+    this.setState({
+      activeGenre: id,
+    });
+  };
+
+  ActiveGenre = (id) => this.setState({activeGenre: id});
+
+
   render() {
-    const { movieList,genreList } = this.state;
-    return (
-        <div>
+    const { movieList,genreList, ActiveGenre,} = this.state;
+
+    if (ActiveGenre) {
+      return (
           <div>
-            {genreList.map((listItem) => (
-                <span
-                    className='genre'
-                >
+            <div>
+              {genreList.map((listItem) => (
+                  <span
+                      className='genre'
+                  >
               {listItem.name}
             </span>
+              ))}
+            </div>
+
+            {movieList.map((listItem) => (
+                <Card
+                    backgroundImage={getImageUrl(listItem.backdrop_path)}
+                    title={listItem.original_title}
+                    releaseDate={listItem.release_date}
+                    score={listItem.vote_average}
+                    votes={listItem.vote_count}
+                    description={listItem.overview}
+                />
             ))}
           </div>
+      )
+    } else {
+      return (
+          <div>
+            <div>
+              {genreList.map((listItem) => (
+                  <span
+                      className='genre'
+                  >
+              {listItem.name}
+            </span>
+              ))}
+            </div>
 
-          {movieList.map((listItem) => (
-              <Card
-                  backgroundImage={getImageUrl(listItem.backdrop_path)}
-                  title={listItem.original_title}
-                  releaseDate={listItem.release_date}
-                  score={listItem.vote_average}
-                  votes={listItem.vote_count}
-                  description={listItem.overview}
-              />
-          ))}
-        </div>
-    );
+            {movieList.map((listItem) => (
+                <Card
+                    backgroundImage={getImageUrl(listItem.backdrop_path)}
+                    title={listItem.original_title}
+                    releaseDate={listItem.release_date}
+                    score={listItem.vote_average}
+                    votes={listItem.vote_count}
+                    description={listItem.overview}
+                />
+            ))}
+          </div>
+      )
+    }
   }
 }
 
