@@ -10,8 +10,7 @@ class App extends React.Component {
     this.state = {
       movieList: [],
       genreList: [],
-      activeGenre: null,
-
+      lovedMovies: [],
     };
     this.getGenresId();
     this.getMovies();
@@ -25,10 +24,10 @@ class App extends React.Component {
   };
 
   setMovieList = (list) => {
-    this.setState({
-      movieList: list,
-    });
+    const movieList = list.map(movie => ({...movie, liked: false}));
+    this.setState({movieList})
   };
+
   getGenre = () => {
     axios
         .get(endpoints.genres())
@@ -48,6 +47,18 @@ class App extends React.Component {
         .catch((error) => console.log(error))
   }
 
+  setlovMovie = () => {
+    const List = this.state.movieList.map((listItem) => {
+      if (listItem.id === id) {
+        return {...listItem, liked: !listItem.liked}
+      } else {
+        return listItem
+      }
+    });
+
+    this.setState({movieList: List})
+  }
+
   render() {
     const {movieList, genreList} = this.state;
     return(
@@ -56,6 +67,7 @@ class App extends React.Component {
         {genreList.map((listItem) => (
             <span
                 className='genre'
+                key={listItem.id}
                 onClick={() => this.getGenresId(listItem.id)}
 
             >
@@ -66,6 +78,8 @@ class App extends React.Component {
 
       {movieList.map((listItem) => (
           <Card
+              setFavoriteMovie={this.setlovMovie}
+              loved={listItem.liked}
               backgroundImage={getImageUrl(listItem.backdrop_path)}
               title={listItem.original_title}
               releaseDate={listItem.release_date}
